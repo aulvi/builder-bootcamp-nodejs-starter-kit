@@ -18,6 +18,7 @@ export const handler = async (event: any = {}): Promise<any> => {
   let response
 
   if (!event || !event.body) {
+    console.log('No event body')
     return {
       headers: 'Access-Control-Allow-Origin: *',
       statusCode: 400,
@@ -25,6 +26,7 @@ export const handler = async (event: any = {}): Promise<any> => {
   }
 
   try {
+    console.log('Preparing to save data')
     const params = {
       TableName: 'data-table',
       Item: JSON.parse(event.body)
@@ -33,6 +35,7 @@ export const handler = async (event: any = {}): Promise<any> => {
     const results = await ddb.put(params).promise()
 
     if (!results) {
+      console.log('No results found')
       response = {
         headers: 'Access-Control-Allow-Origin: *',
         statusCode: 400,
@@ -51,5 +54,6 @@ export const handler = async (event: any = {}): Promise<any> => {
     }
   }
 
+  console.log('Sending response')
   return response
 }
