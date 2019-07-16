@@ -18,7 +18,7 @@ Resources:
         GetData:
           Type: Api
           Properties:
-            Path: /data/{name}
+            Path: /data/{data}
             Method: GET
       Policies:
         - DynamoDBReadPolicy:
