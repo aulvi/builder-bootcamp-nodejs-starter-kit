@@ -28,12 +28,12 @@ export const handler = async (event: any = {}): Promise<any> => {
 
       if (!results || !results.Item) {
         response = {
-          headers: 'Access-Control-Allow-Origin: *',
+          headers: {'Access-Control-Allow-Origin: '*'},
           statusCode: 400,
         }
       } else {
         response = {
-          headers: 'Access-Control-Allow-Origin: *',
+          headers: {'Access-Control-Allow-Origin: '*'},
           statusCode: 200,
           body: JSON.stringify(results.Item),
         }
@@ -41,7 +41,7 @@ export const handler = async (event: any = {}): Promise<any> => {
     } catch (err) {
       console.log(err)
       response = {
-        headers: 'Access-Control-Allow-Origin: *',
+        headers: {'Access-Control-Allow-Origin: '*'},
         statusCode: 500,
       }
     }
