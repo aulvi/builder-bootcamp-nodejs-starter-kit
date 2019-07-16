@@ -1,0 +1,70 @@
+openapi: 3.0.0
+info:
+  title: Batch URL Shortener
+  description: Shortens many urls at the same time
+  version: 2.0.0
+servers:
+  - url: /shrink
+    description: Send Links to this URL to Return Shortened URLs and Original URL as JSON (Returns Both to Give Batch Feedback)
+paths:
+  /shrink:
+    post:
+      summary: Shortens a batch of URL's all at once
+      description: This function will take a list of urls to be shortened, pass them all to the URL shortener and return all the shortened links.
+      requestBody:
+        description: The URL to be shortened
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Urls"
+            example:
+              urls: ["https:google.com","youtube.com/rlkjsaldkjfl"]
+        
+      responses:
+        '200':    # status code
+          description: Successfully Added to DynamoDB
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/result"
+              example:
+                statusCode: 200
+                # Parseable JSON
+                body: "{ shortURLs : [ localhost:3000/fj3asj3k,localhost:3000/23kjsv-2k3 ],
+                        originalURLs: [ https://www.youtube.com/watch?v=STLkjlkajsdf,https://www.google.com/sldkfjala23oi5 ]
+                        }"
+        '400':    # status code
+          description: Error in parsing data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/result"
+              examples:
+                parseError:
+                  value:
+                    statusCode: 400
+                    body: "{ message : error in parsing JSON}"
+                noURLS:
+                  value:
+                    statusCode: 400
+                    body: "{ message : No urls array found in body }"
+
+
+components:
+  schemas:
+    Urls:
+      required:
+        - originalURL
+      properties:
+        urls:
+          type: array
+    result:
+      required:
+        - statusCode
+        - body
+      properties:
+        statusCode:
+          type: integer
+        body:
+          type: string

@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  description: shortens urls
+  version: 0.1.9
+servers:
+  - url: /{shortURL}
+    description: Send Links to this URL to Return Shortened URL and Original URL as JSON (Returns Both to Give Batch Feedback)
+  - url: /expand
+    description: Send Short URL to this URL to Return Original URL as JSON
+paths:
+  /short:
+    post:
+      summary: Returns a JSON Object with originalURL and shortURL.
+      description: Creates Short URL.
+      requestBody:
+        description: The URL to be shortened
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Url"
+            example:
+              originalURL: google.com
+        
+      responses:
+        '200':    # status code
+          description: Successfully Added to DynamoDB
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/result"
+              example:
+                statusCode: 200
+                # Parseable JSON
+                body: "{shortURL: localhost:3000/J1odjwD2,
+                      originalURL: google.com}"
+        '406':    # status code
+          description: Error in method
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/result"
+              examples:
+                noData:
+                  value:
+                    statusCode: 406
+                    body: "Error: No Data in Body"
+                badData:
+                  value:
+                    statusCode: 406
+                    body: "Error: Pass proper JSON"
+        '500':    # status code
+          description: Error in passing to DDB
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/result"
+              example:
+                statusCode: 500
+                body: "Directly pass error from DDB SDK as JSON"
+  /{shortURL}:
+    get:
+      summary: Redirects user to the original URL
+      description: Retrieves original URL from DynamoDB and redirects to it
+      parameters:
+        - name: shortURL
+          in: path
+          required: true
+          description: The shortened url key
+          content:
+            '*/*':
+              schema:
+                type: string
+          
+      responses:
+        '301':    # status code
+          description: Successfully Retrieved from DynamoDB 
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/redirect"
+              example: 
+                statusCode: 301
+                headers: "{Location: http://google.com}"
+        '404':    # status code
+          description: Provided URL does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/result"
+              example: 
+                statusCode: 404
+                body: "URL Does Not Exist"
+components:
+  schemas:
+    Url:
+      required:
+        - originalURL
+      properties:
+        originalURL:
+          type: string
+    result:
+      required:
+        - statusCode
+        - body
+      properties:
+        statusCode:
+          type: integer
+        body:
+          type: string
+    redirect:
+      required:
+        - statusCode
+        - headers
+      properties:
+        statusCode:
+          type: integer
+        headers:
+          type: string
