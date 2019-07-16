@@ -55,5 +55,6 @@ export const handler = async (event: any = {}): Promise<any> => {
   }
 
   console.log('Sending response')
+  console.log(response)
   return response
 }
