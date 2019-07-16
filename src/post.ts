@@ -15,10 +15,11 @@ const ddb = new DynamoDB.DocumentClient()
  * 
  */
 export const handler = async (event: any = {}): Promise<any> => {
-  let response
+  const response = {headers: 'Access-Control-Allow-Origin: *'}
 
   if (!event || !event.body) {
-    response = { status: 400 }
+    response.statusCode = 400
+    return response
   }
 
   try {
@@ -30,13 +31,13 @@ export const handler = async (event: any = {}): Promise<any> => {
     const results = await ddb.put(params).promise()
 
     if (!results) {
-      response = { 'statusCode': 400 }
+      response.statusCode = 400
     } else {
-      response = { 'statusCode': 200 }
+      response.statusCode = 200
     }
   } catch (err) {
     console.log(err)
-    response = { 'statusCode': 500 }
+    response.statusCode = 500
   }
 
   return response

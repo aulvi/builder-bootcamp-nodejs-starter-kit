@@ -20,28 +20,23 @@ export const handler = async (event: any = {}): Promise<any> => {
       const params = {
         TableName: 'data-table',
         Key: {
-          title: event.pathParameters.data
+          data: event.pathParameters.data
         }
       }
 
       const results = await ddb.get(params).promise()
+      const response = {headers: 'Access-Control-Allow-Origin: *'}
 
       if (!results || !results.Item) {
-        response = {
-          'statusCode': 400
-        }
+        response.statusCode = 400
       } else {
-        response = {
-            'statusCode': 200,
-            'body': JSON.stringify(results.Item)
+        response.statusCode = 200
+        response.body = JSON.stringify(results.Item)
         }
       }
     } catch (err) {
       console.log(err)
-
-      response = {
-        'statusCode': 500
-      }
+      response.statusCode = 500
     }
 
     return response
