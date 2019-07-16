@@ -42,7 +42,6 @@ export const handler = async (event: any = {}): Promise<any> => {
       }
     } else {
       response = {
-        headers: 'Access-Control-Allow-Origin: *',
         statusCode: 200,
       }
     }
