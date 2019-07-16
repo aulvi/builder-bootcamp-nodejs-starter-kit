@@ -20,7 +20,7 @@ export const handler = async (event: any = {}): Promise<any> => {
   if (!event || !event.body) {
     console.log('No event body')
     return {
-      headers: {'Access-Control-Allow-Origin: '*'},
+      headers: {'Access-Control-Allow-Origin': '*'},
       statusCode: 400,
     }
   }
@@ -37,19 +37,19 @@ export const handler = async (event: any = {}): Promise<any> => {
     if (!results) {
       console.log('No results found')
       response = {
-        headers: {'Access-Control-Allow-Origin: '*'},
+        headers: {'Access-Control-Allow-Origin': '*'},
         statusCode: 400,
       }
     } else {
       response = {
-        headers: {'Access-Control-Allow-Origin: '*'},
+        headers: {'Access-Control-Allow-Origin': '*'},
         statusCode: 200,
       }
     }
   } catch (err) {
     console.log(err)
     response = {
-      headers: {'Access-Control-Allow-Origin: '*'},
+      headers: {'Access-Control-Allow-Origin': '*'},
       statusCode: 500,
     }
   }
