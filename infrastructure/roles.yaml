@@ -1,0 +1,184 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Template for the CodePipeline resources
+
+Resources:
+  ArtifactBucketName:
+    Type: AWS::S3::Bucket
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - codepipeline.amazonaws.com
+            - cloudformation.amazonaws.com
+          Sid: 1
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess
+      Policies:
+      - PolicyName: WorkerCodePipelineRolePolicy
+        PolicyDocument:
+          Statement:
+            - Action:
+                - s3:GetObject
+                - s3:GetObjectVersion
+                - s3:GetBucketVersioning
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - s3:PutObject
+              Resource: !Sub 'arn:aws:s3:::${ArtifactBucketName}/*'
+              Effect: Allow
+            - Action:
+                - codedeploy:CreateDeployment
+                - codedeploy:GetApplicationRevision
+                - codedeploy:GetDeployment
+                - codedeploy:GetDeploymentConfig
+                - codedeploy:RegisterApplicationRevision
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - autoscaling:DescribeAutoScalingGroups
+                - autoscaling:DescribeLaunchConfigurations
+                - autoscaling:DescribeScalingActivities
+                - autoscaling:ResumeProcesses
+                - autoscaling:SuspendProcesses
+                - cloudformation:GetTemplate
+                - cloudformation:DescribeStackResource
+                - cloudformation:DescribeStackResources
+                - cloudformation:DescribeStackEvents
+                - cloudformation:DescribeStacks
+                - cloudformation:UpdateStack
+                - cloudformation:CreateChangeSet
+                - cloudformation:DescribeChangeSet
+                - ec2:DescribeInstances
+                - ec2:DescribeImages
+                - ec2:DescribeAddresses
+                - ec2:DescribeSubnets
+                - ec2:DescribeVpcs
+                - ec2:DescribeSecurityGroups
+                - ec2:DescribeKeyPairs
+                - elasticloadbalancing:DescribeLoadBalancers
+                - rds:DescribeDBInstances
+                - rds:DescribeOrderableDBInstanceOptions
+                - sns:ListSubscriptionsByTopic
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - lambda:InvokeFunction
+                - lambda:ListFunctions
+                - lambda:CreateFunction
+                - lambda:DeleteFunction
+                - lambda:GetFunctionConfiguration
+                - lambda:AddPermission
+                - lambda:UpdateFunctionCode
+                - lambda:UpdateFunctionConfiguration
+                - lambda:RemovePermission
+                - lambda:ListTags
+                - lambda:TagResource
+                - lambda:UntagResource
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - codecommit:GetBranch
+                - codecommit:GetCommit
+                - codecommit:UploadArchive
+                - codecommit:GetUploadArchiveStatus
+                - codecommit:CancelUploadArchive
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - codebuild:BatchGetBuilds
+                - codebuild:StartBuild
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - sns:Publish
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - iam:CreateRole
+                - iam:AttachRolePolicy
+                - iam:DetachRolePolicy
+                - iam:PutRolePolicy
+                - iam:DeleteRolePolicy
+                - iam:DeleteRole
+                - iam:GetRole
+                - iam:PassRole
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - apigateway:*
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - dynamodb:*
+              Resource: '*'
+              Effect: Allow
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser'
+        - 'arn:aws:iam::aws:policy/AWSCodeCommitPowerUser'
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [codebuild.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                - 'ec2:CreateNetworkInterface'
+                - 'ec2:CreateNetworkInterfacePermission'
+                - 'ec2:DeleteNetworkInterface'
+                - 'ec2:DescribeDhcpOptions'
+                - 'ec2:DescribeNetworkInterfaces'
+                - 'ec2:DescribeSecurityGroups'
+                - 'ec2:DescribeSubnets'
+                - 'ec2:DescribeVpcs'
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+                Effect: Allow
+                Resource: '*'
+              - Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:GetObjectVersion
+                Effect: Allow
+                Resource: !Sub 'arn:aws:s3:::*/*'
+              - Action:
+                - cloudformation:*
+                Effect: Allow
+                Resource: !Sub 'arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*/*'
+
+Outputs:
+
+  ArtifactBucketName:
+    Value: !Ref ArtifactBucketName
+    Export:
+      Name: !Sub ${AWS::StackName}-ArtifactBucketName
+
+  CodePipelineServiceRoleArn:
+    Value: !GetAtt CodePipelineServiceRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-CodePipelineServiceRoleArn
+
+  CodeBuildServiceRoleArn:
+    Value: !GetAtt CodeBuildServiceRole.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-CodeBuildServiceRoleArn
+

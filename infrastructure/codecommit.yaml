@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template describing the CodeCommit resources
+
+Parameters:
+  RepoName:
+    Description: The name of the git repo
+    Type: String
+
+Resources:
+  CodeCommitRepo:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName:
+        Ref: RepoName
+
+Outputs:
+  CodeCommitRepo:
+    Description: Git repo for the service code
+    Value: !Ref CodeCommitRepo

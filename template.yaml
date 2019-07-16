@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  builder-bootcamp-nodejs-starter-kit
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+
+  GetLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: get.handler
+      Runtime: nodejs8.10
+      Events:
+        GetData:
+          Type: Api
+          Properties:
+            Path: /data/{name}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: 'data-table'
+
+  PostLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: post.handler
+      Runtime: nodejs8.10
+      Events:
+        PostData:
+          Type: Api
+          Properties:
+            Path: /data
+            Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: 'data-table'
+
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "data"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "data"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: "data-table"

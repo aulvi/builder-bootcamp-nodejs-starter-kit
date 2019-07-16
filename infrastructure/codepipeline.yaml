@@ -1,0 +1,152 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Template describing the Code Suite tools
+
+Parameters:
+
+  ArtifactBucketName:
+    Type: String
+    Description: Where this pipeline should store artifacts.
+
+  CodePipelineServiceRoleArn:
+    Type: String
+    Description: Arn referencing service-role CodePipeline will use.
+
+  CodeBuildServiceRoleArn:
+    Type: String
+    Description: Arn referencing service-role CodeBuild will use.
+
+  CodeCommitRepositoryName:
+    Type: String
+    Description: Where this pipeline should get source from.
+
+  CodeCommitBranchName:
+    Type: String
+    Description: Where this pipeline should get source from.
+
+Resources:
+  TestStep:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${AWS::StackName}-test"
+      Artifacts:
+        Type: CODEPIPELINE
+      Description: Builds the output artifacts
+      TimeoutInMinutes: 5
+      Environment:
+        ComputeType: BUILD_GENERAL1_LARGE
+        Image: "aws/codebuild/nodejs:8.11.0"
+        Type: LINUX_CONTAINER
+      ServiceRole: !Ref CodeBuildServiceRoleArn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: >
+                  version: 0.2
+
+                  phases:
+                    build:
+                      commands:
+                        - npm install
+                        - make test
+
+  BuildStep:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${AWS::StackName}-build"
+      Artifacts:
+        Type: CODEPIPELINE
+      Description: Builds the output artifacts
+      TimeoutInMinutes: 5
+      Environment:
+        ComputeType: BUILD_GENERAL1_LARGE
+        Image: "aws/codebuild/nodejs:8.11.0"
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: S3BUCKET
+            Value: !Ref ArtifactBucketName
+      ServiceRole: !Ref CodeBuildServiceRoleArn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: !Sub >
+                  version: 0.2
+
+                  phases:
+                    build:
+                      commands:
+                        - npm install
+                        - make build
+                        - aws cloudformation package --template-file template.yaml --s3-bucket $S3BUCKET --output-template-file outputtemplate.yaml
+                  artifacts:
+                    type: zip
+                    files:
+                      - template.yaml
+                      - outputtemplate.yaml
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Ref CodeCommitRepositoryName
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucketName
+      RestartExecutionOnUpdate: true
+      RoleArn: !Ref CodePipelineServiceRoleArn
+      Stages:
+        - Name: Source
+          Actions:
+          - Name: Source
+            ActionTypeId:
+              Category: Source
+              Owner: AWS
+              Provider: CodeCommit
+              Version: '1'
+            Configuration:
+              RepositoryName: !Ref CodeCommitRepositoryName
+              BranchName: !Ref CodeCommitBranchName
+            InputArtifacts: []
+            OutputArtifacts:
+            - Name: SourceArtifact
+
+        - Name: Test
+          Actions:
+          - Name: Test
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Provider: CodeBuild
+              Version: '1'
+            Configuration:
+              ProjectName: !Ref TestStep
+            InputArtifacts:
+              - Name: SourceArtifact
+
+        - Name: Build
+          Actions:
+          - Name: Build
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Provider: CodeBuild
+              Version: '1'
+            Configuration:
+              ProjectName: !Ref BuildStep
+            InputArtifacts:
+              - Name: SourceArtifact
+            OutputArtifacts:
+              - Name: BuildArtifact
+
+        - Name: Deploy
+          Actions:
+          - Name: Deploy
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Provider: CloudFormation
+              Version: '1'
+            InputArtifacts:
+              - Name: BuildArtifact
+            Configuration:
+                ActionMode: CREATE_UPDATE
+                RoleArn: !Ref CodePipelineServiceRoleArn
+                StackName: !Ref CodeCommitRepositoryName
+                Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
+                TemplatePath: BuildArtifact::outputtemplate.yaml
