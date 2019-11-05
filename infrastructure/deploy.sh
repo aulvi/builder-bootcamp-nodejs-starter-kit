@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+set -e
+set -u
+
 # Configuration
 CodeCommitRepoName=builder-bootcamp-nodejs-starter-kit
 StackName=bootcamp-starter-kit-infra
-BucketName=bootcamp-starter-kit-adamulvi
+BucketName=bootcamp-starter-kit-$USER
 
 # Package and deploy
 aws cloudformation package \
@@ -18,3 +21,7 @@ aws cloudformation deploy \
 "CodeCommitRepoName=${CodeCommitRepoName}" \
 --s3-bucket ${BucketName} \
 --capabilities CAPABILITY_IAM
+
+# Display CodeCommit repository URL
+aws codecommit get-repository --repository-name ${CodeCommitRepoName} \
+--output text | awk '{print $4}'
