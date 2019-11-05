@@ -13,17 +13,25 @@
 
 1. Create an S3 bucket
 ```bash
-aws s3 mb s3://bootcamp-starter-kit-adamulvi
+aws s3 mb s3://bootcamp-starter-kit-$USER
 ```
 
-2. Edit `infrastructure/deploy.sh` and set the Configuration options to match your environment
-
-3. Run `make infra` to deploy the infrastructure
+2. Deploy the infrastructure
+```bash
+make infra
+```
 
 **Deploy the application**
 
-1. Add a `git remote` and point it at the CodeCommit repo created by `make infra`.
-2. `git push` your changes and the pipeline should kick off a build
+1. Add a new git remote and point it at the CodeCommit repo created by `make infra`
+```bash
+git remote add codecommit <codecommit-clone-url-http>
+```
+
+2. Push your changes and the pipeline should kick off a build
+```bash
+git push -u codecommit master
+```
 
 
 ## Local development
@@ -47,14 +55,19 @@ make test
 
 **Start the local dev server**
 
-1. Start up the dev server
+1. Install npm dependencies
+```bash
+npm install
+```
+
+2. Start up the dev server
 ```bash
 make dev
 ```
 
-2. Write code, it will be automatically recompiled on save.
+3. Write code, it will be automatically recompiled on save.
 
-3. Test your work at the address returned
+4. Test your work at the address returned
 
 **Running the Swagger editor**
 
