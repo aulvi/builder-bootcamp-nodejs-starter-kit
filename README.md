@@ -55,14 +55,19 @@ make test
 
 **Start the local dev server**
 
-1. Start up the dev server
+1. Install npm dependencies
+```bash
+npm install
+```
+
+2. Start up the dev server
 ```bash
 make dev
 ```
 
-2. Write code, it will be automatically recompiled on save.
+3. Write code, it will be automatically recompiled on save.
 
-3. Test your work at the address returned
+4. Test your work at the address returned
 
 **Running the Swagger editor**
 
