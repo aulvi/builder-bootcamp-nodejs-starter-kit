@@ -13,7 +13,7 @@ Resources:
     Properties:
       CodeUri: ./dist
       Handler: get.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Events:
         GetData:
           Type: Api
@@ -29,7 +29,7 @@ Resources:
     Properties:
       CodeUri: ./dist
       Handler: post.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Events:
         PostData:
           Type: Api
