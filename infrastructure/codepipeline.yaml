@@ -74,6 +74,7 @@ Resources:
                       commands:
                         - npm install
                         - make build
+                        - cp -r node_modules/ dist/node_modules/
                         - aws cloudformation package --template-file template.yaml --s3-bucket $S3BUCKET --output-template-file outputtemplate.yaml
                   artifacts:
                     type: zip
