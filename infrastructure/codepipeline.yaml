@@ -34,7 +34,7 @@ Resources:
       TimeoutInMinutes: 5
       Environment:
         ComputeType: BUILD_GENERAL1_LARGE
-        Image: "aws/codebuild/nodejs:8.11.0"
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:2.0"
         Type: LINUX_CONTAINER
       ServiceRole: !Ref CodeBuildServiceRoleArn
       Source:
@@ -43,9 +43,12 @@ Resources:
                   version: 0.2
 
                   phases:
+                    install:
+                      runtime-versions:
+                        nodejs: 12
                     build:
                       commands:
-                        - npm install
+                        - npm ci
                         - make test
 
   BuildStep:
@@ -58,7 +61,7 @@ Resources:
       TimeoutInMinutes: 5
       Environment:
         ComputeType: BUILD_GENERAL1_LARGE
-        Image: "aws/codebuild/nodejs:8.11.0"
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:2.0"
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: S3BUCKET
@@ -70,10 +73,14 @@ Resources:
                   version: 0.2
 
                   phases:
+                    install:
+                      runtime-versions:
+                        nodejs: 12
                     build:
                       commands:
-                        - npm install
+                        - npm ci
                         - make build
+                        - cp -r node_modules dist
                         - aws cloudformation package --template-file template.yaml --s3-bucket $S3BUCKET --output-template-file outputtemplate.yaml
                   artifacts:
                     type: zip
