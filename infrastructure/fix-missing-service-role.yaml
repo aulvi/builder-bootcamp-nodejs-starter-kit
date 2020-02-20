@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Template for the CodePipeline resources
+
+Resources:
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: <BROKEN-ROLE-NAME>
+       
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - codepipeline.amazonaws.com
+            - cloudformation.amazonaws.com
+          Sid: 1
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess
+      Policies:
+      - PolicyName: WorkerCodePipelineRolePolicy
+        PolicyDocument:
+          Statement:
+            - Action:
+                - s3:GetObject
+                - s3:GetObjectVersion
+                - s3:GetBucketVersioning
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - codedeploy:CreateDeployment
+                - codedeploy:GetApplicationRevision
+                - codedeploy:GetDeployment
+                - codedeploy:GetDeploymentConfig
+                - codedeploy:RegisterApplicationRevision
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - autoscaling:DescribeAutoScalingGroups
+                - autoscaling:DescribeLaunchConfigurations
+                - autoscaling:DescribeScalingActivities
+                - autoscaling:ResumeProcesses
+                - autoscaling:SuspendProcesses
+                - cloudformation:GetTemplate
+                - cloudformation:DescribeStackResource
+                - cloudformation:DescribeStackResources
+                - cloudformation:DescribeStackEvents
+                - cloudformation:DescribeStacks
+                - cloudformation:UpdateStack
+                - cloudformation:CreateChangeSet
+                - cloudformation:DescribeChangeSet
+                - ec2:DescribeInstances
+                - ec2:DescribeImages
+                - ec2:DescribeAddresses
+                - ec2:DescribeSubnets
+                - ec2:DescribeVpcs
+                - ec2:DescribeSecurityGroups
+                - ec2:DescribeKeyPairs
+                - elasticloadbalancing:DescribeLoadBalancers
+                - rds:DescribeDBInstances
+                - rds:DescribeOrderableDBInstanceOptions
+                - sns:ListSubscriptionsByTopic
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - lambda:InvokeFunction
+                - lambda:ListFunctions
+                - lambda:CreateFunction
+                - lambda:DeleteFunction
+                - lambda:GetFunctionConfiguration
+                - lambda:AddPermission
+                - lambda:UpdateFunctionCode
+                - lambda:UpdateFunctionConfiguration
+                - lambda:RemovePermission
+                - lambda:ListTags
+                - lambda:TagResource
+                - lambda:UntagResource
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - codecommit:GetBranch
+                - codecommit:GetCommit
+                - codecommit:UploadArchive
+                - codecommit:GetUploadArchiveStatus
+                - codecommit:CancelUploadArchive
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - codebuild:BatchGetBuilds
+                - codebuild:StartBuild
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - sns:Publish
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - iam:CreateRole
+                - iam:AttachRolePolicy
+                - iam:DetachRolePolicy
+                - iam:PutRolePolicy
+                - iam:DeleteRolePolicy
+                - iam:DeleteRole
+                - iam:GetRole
+                - iam:PassRole
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - apigateway:*
+              Resource: '*'
+              Effect: Allow
+            - Action:
+                - dynamodb:*
+              Resource: '*'
+              Effect: Allow
+
+  
