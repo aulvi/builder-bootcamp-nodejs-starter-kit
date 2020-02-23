@@ -3,9 +3,9 @@
 ## Requirements
 
 * AWS CLI already configured with Administrator permission
+* Git installed and configured
 * [NodeJS 8.10+ installed](https://nodejs.org/en/download/)
 * [Docker installed](https://www.docker.com/community-edition)
-
 
 ## Initial setup & deployment
 
@@ -42,6 +42,8 @@ git push -u codecommit master
 * AWS SAM CLI
 * [NodeJS 8.10+ installed](https://nodejs.org/en/download/)
 * [Docker installed](https://www.docker.com/community-edition)
+
+Please refer to the troubleshooting section for help with setting up authentication and authorization
 
 **Run unit tests**
 
@@ -82,3 +84,13 @@ make swagger-start
 ```bash
 make swagger-stop
 ```
+**Troubleshooting**
+
+If you face the `The requested URL returned error: 403` error while performing git operations:
+
+1. Check if your AWS account user being used has the following 3 permissions:
+    1. AWSCodeCommitFullAccess
+    2. AWSCodeCommitPowerUser
+    3. AWSCodeCommitReadOnly
+
+2. Make sure git credentials are setup properly as described [here](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html)
