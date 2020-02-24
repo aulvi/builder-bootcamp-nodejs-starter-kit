@@ -129,5 +129,6 @@ $RECYCLE.BIN/
 packaged.yaml
 dist
 infrastructure/packaged*.yaml
+keys
 
 # End of https://www.gitignore.io/api/osx,node,linux,windows
