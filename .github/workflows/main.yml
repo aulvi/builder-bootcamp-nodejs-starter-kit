@@ -1,0 +1,17 @@
+name: Mirroring
+
+on: [push, delete]
+
+jobs:
+  to_codecommit:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: pixta-dev/repository-mirroring-action@v1
+      with:
+        target_repo_url:
+          ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/builder-bootcamp-nodejs-starter-kit
+        ssh_private_key:
+          ${{ secrets.CODECOMMIT_SSH_PRIVATE_KEY }}
+        ssh_username:
+          ${{ secrets.CODECOMMIT_SSH_PRIVATE_KEY_ID }}
