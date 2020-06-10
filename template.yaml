@@ -40,9 +40,6 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: 'data-table'
 
-  S3Bucket:
-    Type: AWS::S3::Bucket
-
   DataTable:
     Type: AWS::DynamoDB::Table
     Properties:
