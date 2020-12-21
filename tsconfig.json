@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "commonjs",
+    "target": "ES6",
+    "module": "CommonJs",
     "outDir": "./dist",
     "strict": true,
-    "baseUrl": "./src",
-    "esModuleInterop": true
+    "baseUrl": "./src"
   },
   "types": [
     "aws-sdk",

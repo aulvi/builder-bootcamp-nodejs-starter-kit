@@ -80,7 +80,7 @@ Resources:
                       commands:
                         - npm ci
                         - make build
-                        - cp -r node_modules dist
+                        - cp -r node_modules dist/src
                         - aws cloudformation package --template-file template.yaml --s3-bucket $S3BUCKET --output-template-file outputtemplate.yaml
                   artifacts:
                     type: zip

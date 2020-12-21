@@ -1,13 +1,9 @@
-'use strict';
-
-const app = require('../../dist/simple.js');
-const chai = require('chai');
-const expect = chai.expect;
-var event, context;
+import { expect } from "chai";
+import { handler } from "../src/simple"
 
 describe('Tests index', function () {
     it('verifies successful response', async () => {
-        const result = await app.handler(event, context)
+        const result = await handler({})
 
         expect(result).to.be.an('object');
         expect(result.statusCode).to.equal(200);

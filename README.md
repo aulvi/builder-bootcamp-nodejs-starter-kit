@@ -4,7 +4,7 @@
 
 * AWS CLI already configured with Administrator permission
 * Git installed and configured
-* [NodeJS 8.10+ installed](https://nodejs.org/en/download/)
+* [NodeJS 12+ installed](https://nodejs.org/en/download/)
 * [Docker installed](https://www.docker.com/community-edition)
 
 ## Initial setup & deployment
@@ -16,9 +16,19 @@
 aws s3 mb s3://bootcamp-starter-kit-$USER
 ```
 
+**Note: For Windows environments, you may use the following powershell command**
+```powershell
+aws s3 mb s3://bootcamp-starter-kit-$env:UserName
+```
+
 2. Deploy the infrastructure
 ```bash
 make infra
+```
+
+**Note: For Windows envirnonments, you may use the following powershell command**
+```powershell
+cd .\infrastructure\ && ./deploy.ps1
 ```
 
 **Deploy the application**
@@ -30,7 +40,7 @@ git remote add codecommit <codecommit-clone-url-http>
 
 2. Push your changes and the pipeline should kick off a build
 ```bash
-git push -u codecommit master
+git push -u codecommit main
 ```
 
 
@@ -40,7 +50,7 @@ git push -u codecommit master
 
 * AWS CLI
 * AWS SAM CLI
-* [NodeJS 8.10+ installed](https://nodejs.org/en/download/)
+* [NodeJS 12+ installed](https://nodejs.org/en/download/)
 * [Docker installed](https://www.docker.com/community-edition)
 
 Please refer to the troubleshooting section for help with setting up authentication and authorization
