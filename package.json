@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "prepare": "husky install",
     "lint": "eslint src/ --fix",
-    "test": "mocha tests/unit/",
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "start": "sam local start-api",
     "typecheck": "tsc --noEmit"
   },

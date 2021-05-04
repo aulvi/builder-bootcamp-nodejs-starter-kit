@@ -11,7 +11,7 @@ Resources:
   GetLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist
+      CodeUri: ./dist/src
       Handler: get.handler
       Runtime: nodejs12.x
       Events:
@@ -27,7 +27,7 @@ Resources:
   PostLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist
+      CodeUri: ./dist/src
       Handler: post.handler
       Runtime: nodejs12.x
       Events:
