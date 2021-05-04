@@ -21,7 +21,7 @@ export const handler = async (event: APIGatewayEvent): Promise<APIGatewayProxyRe
     const params = {
       TableName: 'data-table',
       Key: {
-        data: event.pathParameters?.data,
+        data: event?.pathParameters?.data,
       },
     };
 
