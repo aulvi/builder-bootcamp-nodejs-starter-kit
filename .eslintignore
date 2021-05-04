@@ -1,0 +1,11 @@
+# package directories
+node_modules
+
+# AWS SAM directories
+.aws-sam
+
+# Build directories
+build
+
+# Configuration files
+*.js
